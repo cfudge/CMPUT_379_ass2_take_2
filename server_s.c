@@ -265,7 +265,7 @@ void handleread(struct con *cp, char *arg_path)
 		cp->state = STATE_WRITING;
 		cp->bl = cp->bp - cp->buf; /* how much will we write */
 		cp->bp = cp->buf;	   /* and we'll start from here */
-		
+		fprintf(err_file, "Before calloc\n");
 		request_type = calloc(cp->bs, sizeof(char));
 		file_path = calloc(cp->bs + strlen(arg_path), sizeof(char));
 		protocol = calloc(cp->bs, sizeof(char));
