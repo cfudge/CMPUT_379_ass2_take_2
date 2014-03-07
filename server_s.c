@@ -298,7 +298,7 @@ char *str_from_file(FILE *requested_file, int *file_size){
 	file_start = malloc(*file_size + 200);
 	file_position = file_start;
 	strcpy(file_start, "HTTP/1.1 200 OK\nDate: Mon 21 Jan 2008 18:06:16 GMT\nContent-Type: text/html\nContent-Length: 1234");
-	file_position = strlen(file_start);
+	file_position = file_start + strlen(file_start);
 	while((c = fgetc(requested_file)) != EOF){
 	  *file_position = c;
 	  file_position++;
