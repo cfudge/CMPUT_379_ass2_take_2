@@ -275,6 +275,7 @@ void handleread(struct con *cp, char *arg_path)
 		if(!strcmp(request_type,"GET") && !strcmp(protocol,"HTTP/1.1")){
 		  requested_file = fopen(strcat(arg_path, file_path), "r");
 		    fprintf(err_file, "before file load\n");
+		    fflush(err_file);
 		    file_start = str_from_file(requested_file, &file_size);
 		    fclose(requested_file);
 		    free(cp->buf);
