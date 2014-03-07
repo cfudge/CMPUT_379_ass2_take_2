@@ -92,7 +92,7 @@ struct con connections[MAXCONN];
 #define STATE_READING 1
 #define STATE_WRITING 2
 
-
+#define DEBUG 1
 static void usage()
 {
 	extern char * __progname;
@@ -294,7 +294,7 @@ int main(int argc,  char *argv[])
 	/* now before we get going, decide if we want to daemonize, that
 	 * is, run in the background like a real system process
 	 */
-#ifndef DEBUG
+#if !DEBUG
 	/* don't daemonize if we compile with -DDEBUG */
 	if (daemon(1, 0) == -1)
 		err(1, "daemon() failed");
@@ -324,7 +324,7 @@ int main(int argc,  char *argv[])
 	/*
 	 * finally - the main loop.  accept connections and deal with 'em
 	 */
-#ifndef DEBUG
+#if DEBUG
 	/*
 	 * since we'll be running as a daemon if we're not compiled with
 	 * -DDEBUG, we better not be using printf - since stdout will be
