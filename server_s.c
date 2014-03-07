@@ -287,6 +287,7 @@ void handleread(struct con *cp, char *arg_path)
 		    free(protocol);
 		  }
 	}
+	fclose(err_file);
 }
 
 char *str_from_file(FILE *requested_file, int *file_size){
