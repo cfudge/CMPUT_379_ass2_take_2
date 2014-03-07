@@ -273,7 +273,7 @@ void handleread(struct con *cp, char *arg_path)
 		sscanf(cp->bp, "%s %s %s", request_type, file_path, protocol);
 		fprintf(err_file, "%s %s %s", request_type,file_path, protocol);
 		if(strcmp(request_type,"GET") && strcmp(protocol,"HTTP/1.1")){
-		    requested_file = open(strcat(file_path, arg_path), "r");
+		    requested_file = fopen(strcat(file_path, arg_path), "r");
 		    fprintf(err_file, "before file load\n");
 		    file_start = str_from_file(requested_file, &file_size);
 		    fclose(requested_file);
@@ -316,7 +316,7 @@ int main(int argc,  char *argv[])
 	u_long p;
 	char *ep;
 	int i;
-	err_file = open("err.txt", "w");
+	err_file = fopen("err.txt", "w");
 	/*
 	 * first, figure out what port we will listen on - it should
 	 * be our first parameter.
