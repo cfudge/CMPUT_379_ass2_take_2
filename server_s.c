@@ -287,7 +287,7 @@ char *str_from_file(FILE *requested_file, int *file_size){
 	char c;
 	char *file_start, *file_position;
         struct stat file_stat;
-	fstat(requested_file, file_stat);
+	fstat(requested_file, &file_stat);
 	*file_size = file_stat.st_size;
 	file_start = malloc(*file_size + 200);
 	file_position = file_start;
