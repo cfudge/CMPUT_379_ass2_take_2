@@ -53,6 +53,7 @@
 #include <unistd.h>
 #include "server_s.h"
 
+char *str_from_file(FILE *requested_file, int *file_size);
 
 /* we use this structure to keep track of each connection to us */
 struct con {
@@ -265,7 +266,7 @@ void handleread(struct con *cp, char *arg_path)
 		request_type = calloc(cp->bs, sizeof(char));
 		file_path = calloc(cp->bs + strlen(arg_path), sizeof(char));
 		protocol = calloc(cp->bs, sizeof(char));
-		sscanf(cp->bs, "%s %s %s", request_type, file_path, protocol);
+		sscanf(cp->bp, "%s %s %s", request_type, file_path, protocol);
 		if(strcmp(request_type,"GET") && strcmp(protocol,"HTTP/1.1")){
 		    requested_file = open(strcat(file_path, arg_path), "r");
 		    file_start = str_from_file(requested_file, &file_size);
