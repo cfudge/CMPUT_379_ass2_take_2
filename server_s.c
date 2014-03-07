@@ -39,6 +39,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 
 #include <netinet/in.h>
 
@@ -85,6 +86,8 @@ struct con {
 #define MAXCONN 256
 struct con connections[MAXCONN];
 
+#define REQ_BUFFER_SIZE 256;
+
 #define BUF_ASIZE 256 /* how much buf will we allocate at a time. */
 
 /* states used in struct con. */
@@ -96,7 +99,7 @@ struct con connections[MAXCONN];
 static void usage()
 {
 	extern char * __progname;
-	fprintf(stderr, "usage: %s portnumber\n", __progname);
+	fprintf(stderr,"usage: %s portnumber host_path log_path\n",__progname);
 	exit(1);
 }
 
@@ -186,10 +189,15 @@ void handlewrite(struct con *cp)
  * are reading, change the state of this connection to the writing
  * state.
  */
-void handleread(struct con *cp)
+void handleread(struct con *cp, char *arg_path)
 {
 	ssize_t i;
-
+	int file_size;
+	char *c;
+	size_t file_chars;
+	char *file_start;
+	char *request_type, *file_path, *protocol;
+	FILE *requested_file;
 	/*
 	 * first, let's make sure we have enough room to do a
 	 * decent sized read.
@@ -253,7 +261,40 @@ void handleread(struct con *cp)
 		cp->state = STATE_WRITING;
 		cp->bl = cp->bp - cp->buf; /* how much will we write */
 		cp->bp = cp->buf;	   /* and we'll start from here */
+		
+		request_type = calloc(cp->bs, sizeof(char));
+		file_path = calloc(cp->bs + strlen(arg_path), sizeof(char));
+		protocol = calloc(cp->bs, sizeof(char));
+		sscanf(cp->bs, "%s %s %s", request_type, file_path, protocol);
+		if(strcmp(request_type,"GET") && strcmp(protocol,"HTTP/1.1")){
+		    requested_file = open(strcat(file_path, arg_path), "r");
+		    file_start = str_from_file(requested_file, &file_size);
+		    fclose(requested_file);
+		    free(cp->buf);
+		    cp->bl = file_size;
+		    cp->bp = file_start;
+		    cp->buf = file_start;
+		    cp->bs = file_size;
+		    free(request_type);
+		    free(file_path);
+		    free(protocol);
+		  }
 	}
+}
+
+char *str_from_file(FILE *requested_file, int *file_size){
+	char c;
+	char *file_start, *file_position;
+        struct stat file_stat;
+	fstat(requested_file, file_stat);
+	*file_size = file_stat.st_size;
+	file_start = malloc(*file_size);
+	file_position = file_start;
+	while((c = fgetc(requested_file)) != EOF){
+	  *file_position = c;
+	  file_position++;
+	}
+	return file_start;
 }
 
 int main(int argc,  char *argv[])
@@ -272,7 +313,7 @@ int main(int argc,  char *argv[])
 	 * be our first parameter.
 	 */
 
-	if (argc != 2)
+	if (argc != 4)
 		usage();
 		errno = 0;
         p = strtoul(argv[1], &ep, 10);
@@ -488,7 +529,7 @@ int main(int argc,  char *argv[])
 			for (i = 0; i<MAXCONN; i++) {
 				if ((connections[i].state == STATE_READING) &&
 				    FD_ISSET(connections[i].sd, readable))
-					handleread(&connections[i]);
+				  handleread(&connections[i], argv[2]);
 				if ((connections[i].state == STATE_WRITING) &&
 				    FD_ISSET(connections[i].sd, writable))
 					handlewrite(&connections[i]);
