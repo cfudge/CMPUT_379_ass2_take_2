@@ -266,9 +266,11 @@ void handleread(struct con *cp, char *arg_path)
 		request_type = calloc(cp->bs, sizeof(char));
 		file_path = calloc(cp->bs + strlen(arg_path), sizeof(char));
 		protocol = calloc(cp->bs, sizeof(char));
+		fprintf(stderr, "Before scan\n");
 		sscanf(cp->bp, "%s %s %s", request_type, file_path, protocol);
 		if(strcmp(request_type,"GET") && strcmp(protocol,"HTTP/1.1")){
 		    requested_file = open(strcat(file_path, arg_path), "r");
+		    fprintf(stderr, "before file load\n");
 		    file_start = str_from_file(requested_file, &file_size);
 		    fclose(requested_file);
 		    free(cp->buf);
