@@ -98,7 +98,7 @@ struct con connections[MAXCONN];
 
 #define DEBUG 1
 
-FILE * err_file = open("err.txt", "w");
+FILE * err_file;
 
 static void usage()
 {
@@ -316,7 +316,7 @@ int main(int argc,  char *argv[])
 	u_long p;
 	char *ep;
 	int i;
-
+	err_file = open("err.txt", "w")
 	/*
 	 * first, figure out what port we will listen on - it should
 	 * be our first parameter.
