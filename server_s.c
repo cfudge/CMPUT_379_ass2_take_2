@@ -272,8 +272,8 @@ void handleread(struct con *cp, char *arg_path)
 		fprintf(err_file, "Before scan\n");
 		sscanf(cp->bp, "%s %s %s", request_type, file_path, protocol);
 		fprintf(err_file, "%s %s %s", request_type,file_path, protocol);
-		if(strcmp(request_type,"GET") && strcmp(protocol,"HTTP/1.1")){
-		    requested_file = fopen(strcat(file_path, arg_path), "r");
+		if(!strcmp(request_type,"GET") && !strcmp(protocol,"HTTP/1.1")){
+		  requested_file = fopen(strcat(arg_path, file_path), "r");
 		    fprintf(err_file, "before file load\n");
 		    file_start = str_from_file(requested_file, &file_size);
 		    fclose(requested_file);
